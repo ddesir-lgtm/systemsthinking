@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Systems Framing: UnidosNow Project</title>
+<style>
+:root{
+  --bg:#f6f5f2; --card:#fff; --ink:#17202a; --muted:#5f6b76;
+  --line:#d7dde3; --accent:#0f766e; --accent2:#1d4ed8; --accent3:#7c3aed; --accent4:#ea580c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#f9fafb,#f5f4ef);color:var(--ink)}
+.wrap{max-width:1280px;margin:0 auto;padding:28px 20px 48px}
+.card{background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:20px;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-bottom:22px}
+.hero .card{padding:26px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:10px}
+h1{font-size:40px;line-height:1.04;margin:0 0 12px}
+h2{font-size:30px;margin:0}
+p{line-height:1.6;color:#374151}
+.summary{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
+.pill{border:1px solid #e5e7eb;background:#fafafa;border-radius:16px;padding:14px}
+.pill strong{display:block;margin-bottom:6px;font-size:14px}
+.section{margin-top:18px}
+.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:12px}
+.sectionhead p{margin:0;max-width:760px;color:var(--muted)}
+.framework{display:grid;grid-template-columns:320px 1fr;gap:16px}
+.sidebar{padding:16px;display:flex;flex-direction:column;gap:10px}
+.asset-btn{width:100%;text-align:left;border:1px solid #e5e7eb;background:#fff;border-radius:16px;padding:16px;cursor:pointer;transition:.2s}
+.asset-btn strong{display:block;margin-bottom:6px}
+.asset-btn.active{color:#fff;border-color:transparent;box-shadow:0 10px 24px rgba(0,0,0,.12)}
+.asset-btn[data-asset="financial"].active{background:linear-gradient(135deg,#0f766e,#115e59)}
+.asset-btn[data-asset="legal"].active{background:linear-gradient(135deg,#1d4ed8,#1e40af)}
+.asset-btn[data-asset="social"].active{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.asset-btn[data-asset="governance"].active{background:linear-gradient(135deg,#ea580c,#c2410c)}
+.display{padding:20px}
+.heroBox{padding:24px;border-radius:20px;color:#fff;min-height:170px;position:relative;overflow:hidden}
+.heroBox:after{content:"";position:absolute;right:-28px;top:-28px;width:140px;height:140px;border-radius:999px;background:rgba(255,255,255,.12)}
+.heroBox.financial{background:linear-gradient(135deg,#0f766e,#115e59)}
+.heroBox.legal{background:linear-gradient(135deg,#1d4ed8,#1e40af)}
+.heroBox.social{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.heroBox.governance{background:linear-gradient(135deg,#ea580c,#c2410c)}
+.heroBox .mini{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;opacity:.92}
+.heroBox h3{font-size:30px;margin:10px 0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.info{border:1px solid #e5e7eb;border-radius:16px;padding:16px;background:#fff}
+.info h4{margin:0 0 10px}
+.info ul{margin:0;padding-left:18px;font-size:14px;line-height:1.55}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.step{border:1px solid #e5e7eb;background:#fafafa;border-radius:16px;padding:14px}
+.step .num{display:inline-flex;width:28px;height:28px;border-radius:999px;align-items:center;justify-content:center;background:#111827;color:#fff;font-size:12px;font-weight:800;margin-bottom:10px}
+.step strong{display:block;margin-bottom:6px;font-size:14px}
+.step span{font-size:13px;color:var(--muted);line-height:1.5}
+.diagram{padding:18px}
+.diagramwrap{border:1px solid #ececec;border-radius:18px;background:linear-gradient(180deg,#fbfbfb,#f5f7f9);overflow:auto;padding:8px}
+svg{width:100%;height:auto;min-width:1100px}
+.node{fill:#fff;stroke:#cfd7de;stroke-width:2;rx:22;ry:22;filter:drop-shadow(0 4px 10px rgba(0,0,0,.06));cursor:pointer}
+.node.active,.node:hover{stroke:#111827;stroke-width:2.5}
+.edge{fill:none;stroke:#7b8794;stroke-width:2.6;marker-end:url(#arrow);opacity:.86}
+.edge.minus{stroke-dasharray:8 7}
+.label{font-size:15px;font-weight:650;fill:#111827}
+.loop{font-size:14px;font-weight:800;fill:#374151}
+.sign{font-size:14px;font-weight:800;fill:#111827}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:10px}
+.notes{display:grid;grid-template-columns:340px 1fr;gap:12px;margin-top:14px}
+.note{border:1px solid #e5e7eb;border-radius:16px;padding:16px;background:#fff}
+.note h4{margin:0 0 10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{border:1px solid #e5e7eb;background:#fafafa;padding:8px 10px;border-radius:999px;font-size:13px}
+@media (max-width:1100px){.hero,.framework,.notes{grid-template-columns:1fr}.grid3,.flow,.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="card">
+      <div class="eyebrow">Systems perspective</div>
+      <h1>Rules, goals, and adaptation in the regional labor system</h1>
+      <p>This project treats SB 1718 not as a one-time shock, but as a change in the rules of the labor system. The law raises the legal cost of direct undocumented employment without changing the underlying demand for labor in construction and hospitality. The system therefore adapts rather than contracts. Firms shift toward alternative labor channels, reorganize across more establishments, and preserve visible employment. The central intervention is not just “better data.” It is changing the rules conversation and the system goal being evaluated.</p>
+      <div class="summary">
+        <div class="pill"><strong>System problem</strong><span>The policy targets a category of workers rather than the underlying demand for labor.</span></div>
+        <div class="pill"><strong>Observed adaptation</strong><span>H-2B demand rises, establishment structure changes, and formal hiring intensity falls.</span></div>
+        <div class="pill"><strong>Primary leverage point</strong><span>Challenge the rules and goals that define policy “success,” not just the measurement of outcomes.</span></div>
+        <div class="pill"><strong>Intervention logic</strong><span>Reframe the issue from worker legality to employer demand, substitution, and accountability.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Interpretive frame</div>
+      <h2>What the project is trying to change</h2>
+      <p>The strongest contribution of the project is to show that targeting undocumented labor alone does not reduce reliance on immigrant labor. Instead, it changes how that reliance is organized. That means the strategic move for UnidosNow is to intervene at the level of <strong>rules</strong> (how employers can adapt without accountability) and <strong>system goals</strong> (whether policy success is defined as removing undocumented workers from visible payrolls, or reducing exploitative dependence on immigrant labor overall).</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sectionhead">
+      <div>
+        <div class="eyebrow">Interactive framework</div>
+        <h2>Capital assets and leverage architecture</h2>
+      </div>
+      <p>This version is organized around the assets and levers that matter most in the final project: worker security, employer rule structure, collective visibility, and the system’s official definition of success.</p>
+    </div>
+
+    <div class="framework">
+      <div class="card sidebar">
+        <button class="asset-btn active" data-asset="financial"><strong>Worker economic security</strong><span>Income stability, bargaining power, and the ability to stay in formal employment relationships.</span></button>
+        <button class="asset-btn" data-asset="legal"><strong>Rule and accountability structure</strong><span>How legal exposure is distributed across employers, subcontractors, and labor channels.</span></button>
+        <button class="asset-btn" data-asset="social"><strong>Collective visibility and voice</strong><span>Whether workers remain visible to data systems, institutions, and public debate.</span></button>
+        <button class="asset-btn" data-asset="governance"><strong>System goals and policy logic</strong><span>What counts as “success,” and whether the system is judged by labor substitution or simply by reduced visibility.</span></button>
+      </div>
+
+      <div class="card display">
+        <div id="assetHero" class="heroBox financial"></div>
+        <div class="grid3">
+          <div class="info"><h4>What changes in the system</h4><ul id="changeList"></ul></div>
+          <div class="info"><h4>What the project shows</h4><ul id="evidenceList"></ul></div>
+          <div class="info"><h4>What UnidosNow can do</h4><ul id="actionList"></ul></div>
+        </div>
+        <div class="flow" id="flowBox"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sectionhead">
+      <div>
+        <div class="eyebrow">Updated causal loop diagram</div>
+        <h2>Employer adaptation, rule mismatch, and policy persistence</h2>
+      </div>
+      <p>The core loop is no longer framed as “better data.” It is framed as a rules-and-goals problem: policy defines success too narrowly, adaptation preserves visible stability, and that visible stability protects the policy from revision.</p>
+    </div>
+
+    <div class="card diagram">
+      <div class="legend">
+        <span>Solid edge = positive relationship</span>
+        <span>Dashed edge = inverse relationship</span>
+        <span>R1 = substitution loop</span>
+        <span>R2 = invisibility loop</span>
+        <span>R3 = goal-protection loop</span>
+      </div>
+      <div class="diagramwrap">
+        <svg viewBox="0 0 1280 760">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#7b8794"></path>
+            </marker>
+          </defs>
+
+          <text x="70" y="62" class="loop">R1: substitution and restructuring</text>
+          <text x="820" y="88" class="loop">R2: invisibility and weak detection</text>
+          <text x="780" y="652" class="loop">R3: policy goal protection</text>
+
+          <rect class="node active" data-node="goal" x="60" y="100" width="230" height="76"></rect>
+          <text class="label" x="175" y="132" text-anchor="middle">Policy goal defined as</text>
+          <text class="label" x="175" y="154" text-anchor="middle">reducing visible undocumented labor</text>
+
+          <rect class="node" data-node="enforcement" x="350" y="100" width="220" height="76"></rect>
+          <text class="label" x="460" y="132" text-anchor="middle">Enforcement pressure</text>
+          <text class="label" x="460" y="154" text-anchor="middle">and employer liability</text>
+
+          <rect class="node" data-node="risk" x="635" y="100" width="230" height="76"></rect>
+          <text class="label" x="750" y="132" text-anchor="middle">Risk of direct undocumented</text>
+          <text class="label" x="750" y="154" text-anchor="middle">employment increases</text>
+
+          <rect class="node" data-node="adaptation" x="955" y="95" width="250" height="76"></rect>
+          <text class="label" x="1080" y="127" text-anchor="middle">Employer adaptation:</text>
+          <text class="label" x="1080" y="149" text-anchor="middle">substitution and restructuring</text>
+
+          <rect class="node" data-node="h2b" x="940" y="235" width="250" height="76"></rect>
+          <text class="label" x="1065" y="267" text-anchor="middle">More H-2B use and other</text>
+          <text class="label" x="1065" y="289" text-anchor="middle">controlled labor channels</text>
+
+          <rect class="node" data-node="fragmentation" x="630" y="235" width="250" height="76"></rect>
+          <text class="label" x="755" y="267" text-anchor="middle">More diffuse production:</text>
+          <text class="label" x="755" y="289" text-anchor="middle">more establishments, less centralized hiring</text>
+
+          <rect class="node" data-node="stability" x="340" y="235" width="220" height="76"></rect>
+          <text class="label" x="450" y="267" text-anchor="middle">Visible employment and</text>
+          <text class="label" x="450" y="289" text-anchor="middle">output remain stable</text>
+
+          <rect class="node" data-node="invisibility" x="930" y="410" width="260" height="76"></rect>
+          <text class="label" x="1060" y="442" text-anchor="middle">Vulnerable workers become</text>
+          <text class="label" x="1060" y="464" text-anchor="middle">less visible in formal data</text>
+
+          <rect class="node" data-node="misread" x="610" y="410" width="240" height="76"></rect>
+          <text class="label" x="730" y="442" text-anchor="middle">Stable indicators are read</text>
+          <text class="label" x="730" y="464" text-anchor="middle">as policy success</text>
+
+          <rect class="node" data-node="accountability" x="310" y="410" width="220" height="76"></rect>
+          <text class="label" x="420" y="442" text-anchor="middle">Little pressure to change</text>
+          <text class="label" x="420" y="464" text-anchor="middle">the underlying rules</text>
+
+          <rect class="node" data-node="worker-risk" x="790" y="575" width="250" height="76"></rect>
+          <text class="label" x="915" y="607" text-anchor="middle">Worker risk shifts into less formal,</text>
+          <text class="label" x="915" y="629" text-anchor="middle">less protected labor relationships</text>
+
+          <path class="edge" d="M290 138 C320 138,320 138,350 138"></path>
+          <text class="sign" x="320" y="128">+</text>
+
+          <path class="edge" d="M570 138 C600 138,600 138,635 138"></path>
+          <text class="sign" x="600" y="128">+</text>
+
+          <path class="edge" d="M865 138 C900 138,920 138,955 138"></path>
+          <text class="sign" x="910" y="128">+</text>
+
+          <path class="edge" d="M1080 171 C1080 198,1068 218,1065 235"></path>
+          <text class="sign" x="1092" y="206">+</text>
+
+          <path class="edge" d="M955 153 C915 165,885 200,870 235"></path>
+          <text class="sign" x="905" y="194">+</text>
+
+          <path class="edge" d="M630 273 C600 273,585 273,560 273"></path>
+          <text class="sign" x="590" y="263">+</text>
+
+          <path class="edge minus" d="M880 273 C900 310,945 355,1015 410"></path>
+          <text class="sign" x="930" y="353">−</text>
+
+          <path class="edge plus" d="M450 311 C450 350,550 390,610 430"></path>
+          <text class="sign" x="520" y="372">+</text>
+
+          <path class="edge plus" d="M930 448 C900 448,875 448,850 448"></path>
+          <text class="sign" x="885" y="438">+</text>
+
+          <path class="edge plus" d="M610 448 C580 448,560 448,530 448"></path>
+          <text class="sign" x="565" y="438">+</text>
+
+          <path class="edge plus" d="M310 448 C210 448,175 335,175 176"></path>
+          <text class="sign" x="208" y="318">+</text>
+
+          <path class="edge plus" d="M1000 486 C985 520,955 555,935 575"></path>
+          <text class="sign" x="975" y="530">+</text>
+
+          <path class="edge plus" d="M790 612 C690 612,625 515,625 486"></path>
+          <text class="sign" x="690" y="590">+</text>
+        </svg>
+      </div>
+
+      <div class="notes">
+        <div class="note">
+          <h4>What changed in this version</h4>
+          <p>The old framing centered information flows. This updated framing treats information as one part of a larger intervention on <strong>rules</strong> and <strong>system goals</strong>. The project questions whether “reduced visible undocumented employment” is a meaningful policy goal when labor demand remains intact and firms simply substitute into other arrangements.</p>
+          <div class="chips">
+            <div class="chip">Leverage point: rules</div>
+            <div class="chip">Leverage point: system goals</div>
+            <div class="chip">Support: information flows</div>
+          </div>
+        </div>
+        <div class="note" id="nodeDetail">
+          <h4>Node detail</h4>
+          <p>Click any node in the diagram to see what it means in the final project and why it matters for advocacy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const assetData = {
+  financial: {
+    cls:'financial',
+    mini:'Asset / lever 1',
+    title:'Worker economic security',
+    desc:'The final project shows that the issue is not labor demand collapse. It is whether workers can convert continued labor demand into stable, protected, and negotiable work.',
+    changes:[
+      'Workers may face lower bargaining power even if wages and employment remain positive in the aggregate.',
+      'Fragmented organizational structures can shift more volatility onto smaller firms and worker-level relationships.',
+      'A labor market can remain active while becoming less stable at the point of worker entry and retention.'
+    ],
+    evidence:[
+      'Formal hire rates decline while overall employment remains strong.',
+      'Establishment counts rise even as the system preserves output.',
+      'H-2B demand rises rather than labor demand disappearing.'
+    ],
+    actions:[
+      'Frame the problem as labor-market reorganization, not labor-market collapse.',
+      'Document the worker experience of entry barriers, subcontracting, and instability.',
+      'Use employer accountability language rather than scarcity language alone.'
+    ],
+    flow:[
+      ['Rule pressure rises','Direct undocumented hiring becomes riskier.'],
+      ['Employers adapt','Labor is reorganized through more controlled or diffuse channels.'],
+      ['Worker leverage weakens','Entry into stable formal jobs becomes less direct.'],
+      ['Stability is redistributed','Output stays up while worker security becomes more fragile.']
+    ]
+  },
+  legal: {
+    cls:'legal',
+    mini:'Asset / lever 2',
+    title:'Rule and accountability structure',
+    desc:'This project points to rules as a central leverage point. The key issue is how the legal burden of compliance is distributed and how employer adaptation is allowed to preserve demand without equivalent accountability.',
+    changes:[
+      'Lead firms face pressure but can adapt by altering organizational form.',
+      'Smaller or more diffuse entities may absorb more of the visible compliance burden.',
+      'The system can preserve legal appearance without reducing labor dependence.'
+    ],
+    evidence:[
+      'Establishment growth and diffuse production structure are consistent with reorganization.',
+      'The paper’s strongest interpretation is rule mismatch, not simple enforcement failure.',
+      'Substitution into H-2B shows that labor dependence is being rerouted rather than removed.'
+    ],
+    actions:[
+      'Shift advocacy toward employer accountability and labor-chain responsibility.',
+      'Ask how rules govern adaptation, not just whether employers comply visibly.',
+      'Push on the design of labor supply channels rather than only the legality of workers.'
+    ],
+    flow:[
+      ['Rules target one channel','Undocumented labor is penalized directly.'],
+      ['Demand remains','Firms still need labor to complete work.'],
+      ['Adaptation follows','Other channels and structures become more attractive.'],
+      ['Rule mismatch persists','The target changes but the dependence does not.']
+    ]
+  },
+  social: {
+    cls:'social',
+    mini:'Asset / lever 3',
+    title:'Collective visibility and voice',
+    desc:'The project still uses information flows, but as a supporting leverage point. Visibility matters because the workers most affected are the ones most likely to disappear from the data used to evaluate policy.',
+    changes:[
+      'Administrative and survey systems undercount the populations most exposed to enforcement.',
+      'Communities become harder to observe precisely when vulnerability is rising.',
+      'Public debate can mistake weak visibility for weak harm.'
+    ],
+    evidence:[
+      'Section 5 explicitly shows how formal datasets can miss informalization and reorganization.',
+      'Stable indicators can coexist with hidden worker displacement from formal systems.',
+      'The project argues that the absence of a visible harm signal is evidence of where the harm went.'
+    ],
+    actions:[
+      'Build worker-centered survey infrastructure through trusted community relationships.',
+      'Use that evidence to challenge shallow readings of employment and wage stability.',
+      'Translate invisible outcomes into public narratives and organizational strategy.'
+    ],
+    flow:[
+      ['Enforcement salience rises','Workers avoid formal visibility.'],
+      ['Data gaps widen','Standard indicators miss the most exposed workers.'],
+      ['Misdiagnosis hardens','The system is read as healthier than it is.'],
+      ['Counter-evidence matters','Community data becomes a strategic intervention.']
+    ]
+  },
+  governance: {
+    cls:'governance',
+    mini:'Asset / lever 4',
+    title:'System goals and policy logic',
+    desc:'This is the highest-value move. The project challenges the official goal being used to judge success. Reduced visible undocumented employment is not the same thing as reduced dependence on immigrant labor.',
+    changes:[
+      'The official goal is too narrow: it tracks worker category, not labor dependence.',
+      'The policy can appear successful while reliance on immigrant labor remains intact.',
+      'This protects the policy from revision because the wrong success metric is being used.'
+    ],
+    evidence:[
+      'The paper now explicitly allows the counterargument that enforcement could be extended further.',
+      'But the evidence still shows persistent labor demand and substitution into other channels.',
+      'That means the underlying system goal is misaligned with actual labor demand.'
+    ],
+    actions:[
+      'Reframe the debate from “Did undocumented workers disappear?” to “Did dependence on immigrant labor fall?”',
+      'Make the mismatch between policy goal and system behavior the center of public advocacy.',
+      'Push decision-makers to judge policies by labor-market outcomes and worker protections, not just visibility reduction.'
+    ],
+    flow:[
+      ['Goal misdefined','Success is measured by visible undocumented labor leaving payrolls.'],
+      ['Adaptation protects appearances','Employers substitute and preserve output.'],
+      ['Policy looks successful','Stable indicators reinforce the official story.'],
+      ['Goal persists','The same narrow metric continues to govern the system.']
+    ]
+  }
+};
+
+const nodeText = {
+  goal:'This node matters because it sets the evaluation standard. If success is defined too narrowly—reducing visible undocumented labor—then the policy can “succeed” even while dependence on immigrant labor remains intact.',
+  enforcement:'This is the immediate policy lever: the law raises the cost of direct undocumented employment and changes the incentive environment for employers.',
+  risk:'This is the mechanism translating the law into firm behavior. The issue is not whether firms stop needing labor. It is whether direct employment of one category of labor becomes too risky.',
+  adaptation:'This is the pivot node in the whole model. Employers adapt to rule pressure through substitution and reorganization rather than by reducing demand.',
+  h2b:'This node captures the substitution finding: firms continue using immigrant labor, but through a more controlled and legally authorized channel.',
+  fragmentation:'This is where the structural story lives. Work is distributed across more establishments and less centralized hiring relationships.',
+  stability:'This is the deceptive outcome. The labor market can remain visibly stable even when the underlying organization of labor has shifted substantially.',
+  invisibility:'The most vulnerable workers become less visible in the very data systems used to judge whether the policy worked.',
+  misread:'Stable employment and wage indicators can be interpreted as policy success, even when the system has only adapted rather than solved the problem.',
+  accountability:'This is where advocacy enters. If the indicators are misread, there is little pressure to change the rules producing the adaptation.',
+  'worker-risk':'This is the distributional endpoint: the system preserves output by relocating risk into more fragile labor relationships.'
+};
+
+const btns = document.querySelectorAll('.asset-btn');
+const assetHero = document.getElementById('assetHero');
+const changeList = document.getElementById('changeList');
+const evidenceList = document.getElementById('evidenceList');
+const actionList = document.getElementById('actionList');
+const flowBox = document.getElementById('flowBox');
+
+function renderAsset(key){
+  const d = assetData[key];
+  btns.forEach(b => b.classList.toggle('active', b.dataset.asset === key));
+  assetHero.className = `heroBox ${d.cls}`;
+  assetHero.innerHTML = `<div class="mini">${d.mini}</div><h3>${d.title}</h3><p>${d.desc}</p>`;
+  changeList.innerHTML = d.changes.map(x => `<li>${x}</li>`).join('');
+  evidenceList.innerHTML = d.evidence.map(x => `<li>${x}</li>`).join('');
+  actionList.innerHTML = d.actions.map(x => `<li>${x}</li>`).join('');
+  flowBox.innerHTML = d.flow.map((step,i) => `<div class="step"><div class="num">${i+1}</div><strong>${step[0]}</strong><span>${step[1]}</span></div>`).join('');
+}
+btns.forEach(b => b.addEventListener('click', () => renderAsset(b.dataset.asset)));
+renderAsset('financial');
+
+const detail = document.getElementById('nodeDetail');
+document.querySelectorAll('.node').forEach(n => {
+  n.addEventListener('click', () => {
+    document.querySelectorAll('.node').forEach(x => x.classList.remove('active'));
+    n.classList.add('active');
+    const key = n.dataset.node;
+    detail.innerHTML = `<h4>${key.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</h4><p>${nodeText[key]}</p>`;
+  });
+});
+</script>
+</body>
+</html>
